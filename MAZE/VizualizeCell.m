@@ -1,4 +1,4 @@
-function VizualizeCell(currentCell, isVisited, height) % Status of cell
+function VizualizeCell(currentCell, isVisited, height) % Vizualize the status of cell
   
 if isVisited % visited twice
     color = 'b';

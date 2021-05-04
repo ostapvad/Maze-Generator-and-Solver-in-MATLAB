@@ -1,11 +1,9 @@
-function  VizualizeMaze(maze, GoalCell)
+function  VizualizeMaze(maze, GoalCell) % draws the black-white Line Based maze
 
-% draws the black-white Line Based maze
-
-
-% draw start cell
+% draw the start cell
 rectangle('Position',[maze.startCell.col, maze.height-maze.startCell.row+1, 1,1], 'FaceColor', 'r', 'EdgeColor', 'r');
 
+% draw the goal cell
 if ~isempty(GoalCell)
    rectangle('Position',[GoalCell(2), maze.height-GoalCell(1)+1, 1,1], 'FaceColor', 'g', 'EdgeColor', 'g');
 
@@ -13,7 +11,6 @@ end
 
 
 % draw vertical borders
-
 for i=1:size(maze.vertBorder,1)
    for  j=1:size(maze.vertBorder,2)
        if  maze.vertBorder(i,j)
@@ -22,7 +19,7 @@ for i=1:size(maze.vertBorder,1)
    end
 end 
 
-%draw horizontal borders
+% draw horizontal borders
 for i=1:size(maze.horizBorder,1)
    for  j=1:size(maze.horizBorder,2)
        if  maze.horizBorder(i,j)
@@ -32,18 +29,8 @@ for i=1:size(maze.horizBorder,1)
 end 
 
 
-
-
-
-% Axis limits
-x_plot_limits = [0 maze.width+2];
-y_plot_limits = [0 maze.height+2];
-
-%xlim(x_plot_limits);
-%ylim(y_plot_limits);
-
 % Other parameters
 set(gca,'Visible','off') % turn of the axes
-%set(gcf,'color',[0, 0.4470, 0.7410]); % set backcolor of figure to blue
+
 end
 

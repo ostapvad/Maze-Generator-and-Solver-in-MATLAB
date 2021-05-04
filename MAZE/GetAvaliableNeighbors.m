@@ -1,4 +1,4 @@
-function neighbors = GetAvaliableNeighbors(visitMatrix,currentCell)
+function neighbors = GetAvaliableNeighbors(visitMatrix,currentCell) % returns the unvisited neigbors of the current cell
 neighbors = [];
 row_pose = currentCell.row;
 col_pose = currentCell.col;
