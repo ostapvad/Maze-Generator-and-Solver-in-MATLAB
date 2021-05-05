@@ -1,4 +1,4 @@
-function  generated_maze = Randomized_DFS(init_maze, isVizualize) % Randomized DFS algoithm for the maze generating
+function  generated_maze = Randomized_DFS(init_maze, isVizualize, fig) % Randomized DFS algoithm for the maze generating
 % Matrix of visited cells
 visitMatrix = zeros(init_maze.height, init_maze.width);
 
@@ -19,7 +19,7 @@ while end_ind ~=0 % stack is not empty
     neighbors = GetAvaliableNeighbors(visitMatrix,currentCell);
     if ~isempty(neighbors) % if there are unvisited neighbors
         randIdx = randi(length(neighbors)); % choose random neigbor
-        init_maze = ConnectCells(init_maze, currentCell, neighbors(randIdx), isVizualize);
+        init_maze = ConnectCells(init_maze, currentCell, neighbors(randIdx), isVizualize, fig);
         visitMatrix( neighbors(randIdx).row,  neighbors(randIdx).col) = 1;
         end_ind = end_ind+1;
         pathStack{end_ind}= neighbors(randIdx);
@@ -29,7 +29,7 @@ while end_ind ~=0 % stack is not empty
         isVisited=true; % cell is visited twice
     end 
     if isVizualize
-        VizualizeCell([currentCell.row, currentCell.col], isVisited, init_maze.height);
+        VizualizeCell([currentCell.row, currentCell.col], isVisited, init_maze.height, fig);
         pause(0.1);
     end
 end 

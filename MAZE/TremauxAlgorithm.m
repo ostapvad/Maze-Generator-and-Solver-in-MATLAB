@@ -1,4 +1,4 @@
-function [pathStack, pathLength] = TremauxAlgorithm(maze, StartCell, GoalCell, isVizualize) % Tremaux's algorithm for solving the maze
+function [pathStack, pathLength] = TremauxAlgorithm(maze, StartCell, GoalCell, isVizualize, fig) % Tremaux's algorithm for solving the maze
 currentPose =  CreateCell(StartCell(1), StartCell(2));
 pathStack = cell(1);
 pathLength = 1;
@@ -35,9 +35,9 @@ while ~((currentPose.row == GoalCell(1) && currentPose.col == GoalCell(2))|| ( c
         end
         
        if isVizualize
-          VizualizeSearching(maze.height, vizualizeCell, 3);
+          VizualizeSearching(maze.height, vizualizeCell, 3, fig);
           pause(0.1);
-          VizualizeSearching(maze.height,vizualizeCell,  marksMatrix(vizualizeCell.row, vizualizeCell.col));
+          VizualizeSearching(maze.height,vizualizeCell,  marksMatrix(vizualizeCell.row, vizualizeCell.col), fig);
           pause(0.1);   
        end 
         
@@ -49,7 +49,7 @@ end
 
 marksMatrix(currentPose.row, currentPose.col) = marksMatrix(currentPose.row, currentPose.col) + 1;
 if isVizualize
-    VizualizeSearching(maze.height, currentPose,  marksMatrix(currentPose.row, currentPose.col));
+    VizualizeSearching(maze.height, currentPose,  marksMatrix(currentPose.row, currentPose.col), fig);
     pause(0.1);   
 end
 
