@@ -1,2 +1,3 @@
 # Maze-Generator-and-Solver-in-MATLAB
-Solve the generation problem
+1. Unzip or clone the repo.
+2. Run run.m file.
