@@ -58,7 +58,8 @@ classdef GUI<handle
             function InitMainWindow(obj) 
                 obj.RunWindow  = uifigure('Name', 'Maze Generator-Solver',...
                       'Position', obj.DefaultFigPose, ...
-                      'AutoResizeChildren',  'off');
+                      'AutoResizeChildren',  'off', ...
+                      'CloseRequestFcn', @(src,event)obj.CloseRequest);
                       
             end 
             %% Init the parameters of the generation panel
@@ -268,15 +269,19 @@ classdef GUI<handle
                obj.GenAxes = uiaxes('Parent', obj.RunWindow, ...,
                    'Position', [obj.GenPanel.Position(1) - 4, 5,  obj.GenPanel.Position(3), obj.GenPanel.Position(2) - 5], ...
                    'XTick',[], 'YTick', [], ...
-                   'XColor','w', 'YColor', 'w');
+                   'XColor','w', 'YColor', 'w', ...
+                   'Interactions', []);
+               obj.GenAxes.Toolbar.Visible = 0;
                obj.SolveAxes = uiaxes('Parent', obj.RunWindow, ...,
                    'Position', [obj.SolvePanel.Position(1) - 4, 5,  obj.SolvePanel.Position(3), obj.SolvePanel.Position(2) - 5], ...
                    'XTick',[], 'YTick', [], ...
-                   'XColor','w', 'YColor', 'w');
+                   'XColor','w', 'YColor', 'w',...
+                   'Interactions', []);
+               obj.SolveAxes.Toolbar.Visible = 0;
                obj.RunWindow.SizeChangedFcn =  @(src,event)obj.WindowSize();
                
-            end
-            
+
+            end     
             %% Callback functions
             function WindowSize(obj) % Update panels and axes sizes
          
@@ -285,7 +290,23 @@ classdef GUI<handle
                  obj.GenAxes.Position =  [obj.GenPanel.Position(1) - 4, 5,  obj.GenPanel.Position(3)+10, obj.GenPanel.Position(2) - 5];
                  obj.SolveAxes.Position =  [obj.SolvePanel.Position(1)-4, 5,  obj.SolvePanel.Position(3)+10, obj.SolvePanel.Position(2) - 5];
             end
-                
+            function CloseRequest(obj) % Close button request of the app
+        
+            selection = uiconfirm(obj.RunWindow,'Close the app ?',...
+                'Confirmation');
+
+            switch selection
+                case 'OK'
+                    delete(obj.RunWindow);
+                 
+                    %quit(0,"force")
+                    %exit;
+
+                case 'Cancel'
+                    return
+            end
+        
+            end  
             %% Generation panel callbacks
             % Sizes changed
             function  HeightChanged(obj, event) 
@@ -332,27 +353,30 @@ classdef GUI<handle
             end
             % Generate button
             function  RunGeneration(obj)
-                % Disable all other panels
-                obj.SetPanelStatus(1, 'off');
-                obj.SetPanelStatus(0, 'off');
-                obj.isGenerated = false; 
-                cla(obj.SolveAxes);
-                cla(obj.GenAxes);
-                pause(1)
-                % Generate
-                init_maze = InitMaze(obj.Height, obj.Width, obj.GenStartPose);
-                obj.VizualizeAxe(1, init_maze, false);
-                
-                % Vizualize Generating(yes or no)
-                obj.GenMaze = Randomized_DFS(init_maze, obj.isVizualizeGen, obj.GenAxes);
-                obj.SolvedMaze = obj.GenMaze;
-                obj.VizualizeAxe(1, obj.GenMaze, false);
-                obj.VizualizeAxe(0, obj.SolvedMaze, false);
-                % Enable all other panels
-                obj.SetPanelStatus(1, 'on');
-                obj.SetPanelStatus(0, 'on');
-                obj.isGenerated = true;
-                 
+                try % if the app close button was pressed
+                    % Disable all other panels
+                    obj.SetPanelStatus(1, 'off');
+                    obj.SetPanelStatus(0, 'off');
+                    obj.isGenerated = false; 
+                    cla(obj.SolveAxes);
+                    cla(obj.GenAxes);
+                    pause(1)
+                    % Generate
+                    init_maze = InitMaze(obj.Height, obj.Width, obj.GenStartPose);
+                    obj.VizualizeAxe(1, init_maze, false);
+
+                    % Vizualize Generating(yes or no)
+                    obj.GenMaze = Randomized_DFS(init_maze, obj.isVizualizeGen, obj.GenAxes);
+                    obj.SolvedMaze = obj.GenMaze;
+                    obj.VizualizeAxe(1, obj.GenMaze, false);
+                    obj.VizualizeAxe(0, obj.SolvedMaze, false);
+                    % Enable all other panels
+                    obj.SetPanelStatus(1, 'on');
+                    obj.SetPanelStatus(0, 'on');
+                    obj.isGenerated = true;
+                catch 
+                   return; 
+                end
     
             end
             %% Solve panel callbacks
@@ -409,25 +433,29 @@ classdef GUI<handle
             end
             % Solve button
             function  RunSolving(obj)
-                if obj.isGenerated
-                    obj.SetPanelStatus(1, 'off');
-                    obj.SetPanelStatus(0, 'off'); 
-                    obj.SolvedMaze.startCell.row = obj.SolveStartPose(1);
-                    obj.SolvedMaze.startCell.col = obj.SolveStartPose(2);
-                    pause(1)
-                    obj.VizualizeAxe(0, obj.SolvedMaze, false);
-                    [obj.pathStack, obj.pathLength]  = TremauxAlgorithm(obj.SolvedMaze, obj.SolveStartPose, obj.SolveGoalPose, obj.isVizualizeSolve, obj.SolveAxes);
-                    if obj.isVizualizeSolve
-                       obj.VizualizeAxe(0, obj.SolvedMaze, false);
-                        
-                    end
-                    
-                       
-                   VizualizePath(obj.SolvedMaze,obj.pathStack, obj.pathLength, obj.SolveAxes, obj.SolveGoalPose, false);
-                  
-                    obj.SetPanelStatus(1, 'on');
-                    obj.SetPanelStatus(0, 'on'); 
-                end 
+                try % app close button was pressed
+                    if obj.isGenerated
+                        obj.SetPanelStatus(1, 'off');
+                        obj.SetPanelStatus(0, 'off'); 
+                        obj.SolvedMaze.startCell.row = obj.SolveStartPose(1);
+                        obj.SolvedMaze.startCell.col = obj.SolveStartPose(2);
+                        pause(1)
+                        obj.VizualizeAxe(0, obj.SolvedMaze, false);
+                        [obj.pathStack, obj.pathLength]  = TremauxAlgorithm(obj.SolvedMaze, obj.SolveStartPose, obj.SolveGoalPose, obj.isVizualizeSolve, obj.SolveAxes);
+                        if obj.isVizualizeSolve
+                           obj.VizualizeAxe(0, obj.SolvedMaze, false);
+
+                        end
+
+
+                       VizualizePath(obj.SolvedMaze,obj.pathStack, obj.pathLength, obj.SolveAxes, obj.SolveGoalPose, false);
+
+                        obj.SetPanelStatus(1, 'on');
+                        obj.SetPanelStatus(0, 'on'); 
+                    end 
+                catch
+                    return
+                end
                    
                
             end
